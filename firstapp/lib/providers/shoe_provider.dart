@@ -6,12 +6,13 @@ class ShoeProvider with ChangeNotifier {
     Shoe(
       id: '1',
       name: 'Running Shoe',
-      description: 'Comfortable running shoe for daily workouts',
+      description:
+          'A derby leather shoe is a classic and versatile footwear option characterized by its open lacing system, where the shoelace eyelets are sewn on top of the vamp (the upper part of the shoe). This design feature provides a more relaxed and casual look compared to the closed lacing system of oxford shoes. Derby shoes are typically made of high-quality leather, known for its durability and elegance, making them suitable for both formal and casual occasions. With their timeless style and comfortable fit, derby leather shoes are a staple in any well-rounded wardrobe.',
       category: 'Sports',
       size: 42,
       price: 79.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Air_Jordan_1_Banned.jpg/1200px-Air_Jordan_1_Banned.jpg',
+      imageUrl: '../../assets/images/shoe.jpg',
+      rating: 4.1,
     ),
     Shoe(
       id: '2',
@@ -20,8 +21,18 @@ class ShoeProvider with ChangeNotifier {
       category: 'Casual',
       size: 40,
       price: 99.99,
-      imageUrl:
-          'https://redtape.com/cdn/shop/files/RSL1073_1._bcd54810-97be-4448-ab60-5c07412084c9.jpg?v=1756809100',
+      imageUrl: '../../assets/images/shoe.jpg',
+      rating: 4.1,
+    ),
+    Shoe(
+      id: '2',
+      name: 'Casual Sneaker',
+      description: 'Stylish sneaker for everyday wear',
+      category: 'Casual',
+      size: 40,
+      price: 99.99,
+      rating: 4.1,
+      imageUrl: '../../assets/images/shoe.jpg',
     ),
   ];
 

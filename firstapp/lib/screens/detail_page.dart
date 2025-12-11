@@ -13,7 +13,6 @@ class DetailPage extends StatelessWidget {
     // Find the shoe using the ID
     final shoe = shoeProvider.findById(shoeId);
 
-    // Hardcoded sizes for the visual UI list (39 to 44)
     final List<double> availableSizes = [39, 40, 41, 42, 43, 44];
 
     return Scaffold(
@@ -24,7 +23,7 @@ class DetailPage extends StatelessWidget {
           Stack(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: const Color(
@@ -34,7 +33,7 @@ class DetailPage extends StatelessWidget {
                     image: NetworkImage(shoe.imageUrl),
                     fit:
                         BoxFit
-                            .contain, // Contain ensures the whole shoe is visible
+                            .fill, // Contain ensures the whole shoe is visible
                   ),
                 ),
               ),
@@ -153,14 +152,6 @@ class DetailPage extends StatelessWidget {
                                         ? const Color(0xFF3F51B5)
                                         : Colors.white, // Blue if selected
                                 borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  if (!isSelected)
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.1),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                    ),
-                                ],
                               ),
                               child: Text(
                                 s.toStringAsFixed(0),

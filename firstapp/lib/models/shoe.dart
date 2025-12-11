@@ -6,6 +6,7 @@ class Shoe {
   double size;
   double price;
   String imageUrl;
+  double rating;
 
   Shoe({
     required this.id,
@@ -15,5 +16,6 @@ class Shoe {
     required this.category,
     required this.size,
     required this.imageUrl,
+    required this.rating,
   });
 }

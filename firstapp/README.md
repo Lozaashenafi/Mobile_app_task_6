@@ -1,16 +1,49 @@
-# firstapp
+# Flutter E-Commerce Mobile App
 
-A new Flutter project.
+## 📱 Project Overview
 
-## Getting Started
+A Flutter e-commerce application that implements product management with UI design replication and comprehensive navigation features. This project completes Task 6 and Task 7 as part of mobile development A2SV assignments.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 📋 Tasks Implementation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### **Submission — Task 6: Flutter User Interface Implementation**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This README documents the submission for Task 6. The screenshots below illustrate the app UI and key features implemented for this task.
+
+**Features Implemented:**
+
+- Replicated provided Figma design with pixel-perfect accuracy
+- Implemented consistent design system with proper spacing, typography, and colors
+- Utilized appropriate Flutter widgets: Container, Column, Row, Image, Text, Button
+- Designed responsive layouts for different screen sizes
+- Created custom UI components matching the design reference
+
+**Screenshots:**
+
+![Home Screen](assets/images/screenshoot1.jpg)
+_Home Screen showing product listing with grid layout_
+
+![Product Detail](assets/images/screenshoot2.jpg)
+_Product Detail Screen displaying full product information_
+
+![Add Product](assets/images/screenshoot3.jpg)
+_Add Product Screen with form validation and input fields_
+
+![Search Functionality](assets/images/screenshoot4.jpg)
+_Search Screen with filtering capabilities_
+
+---
+
+### **Submission — Task 7: Navigation and Routing Implementation**
+
+Task 7 implements app routing using named routes and demonstrates passing data between screens in the e-commerce application.
+
+**Features Implemented:**
+
+- **Named Routes**: Configured named routes in MaterialApp with proper route hierarchy
+- **Screen Navigation**: Implemented three main screens (Home, Add/Edit, Detail) with seamless navigation
+- **Data Passing**: Successfully pass product data from Add/Edit screens back to Home screen
+- **Navigation Animations**: Custom page transitions with smooth animations between screens
+- **Back Button Handling**: Proper navigation stack management and back button functionality

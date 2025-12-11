@@ -11,98 +11,103 @@ class HomePage extends StatelessWidget {
 
   // Helper method to build the custom header content
   Widget _buildCustomHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Row 1: Avatar, Date/Name, Notification Icon
-          Row(
-            children: [
-              // Avatar Square
-              Container(
-                width: 45,
-                height: 45,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                // You can add an image/icon here
-              ),
-              const SizedBox(width: 15),
-
-              // Date + Hello Text
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'July 14, 2023',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Row 1: Avatar, Date/Name, Notification Icon
+            Row(
+              children: [
+                // Avatar Square
+                Container(
+                  width: 35,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const Text(
-                    'Hello, Yohannes',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  // You can add an image/icon here
+                ),
+                const SizedBox(width: 15),
+
+                // Date + Hello Text
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'July 14, 2023',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                     ),
-                  ),
-                ],
-              ),
-
-              const Spacer(),
-
-              // Notification Icon
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                  borderRadius: BorderRadius.circular(10),
+                    const Text(
+                      'Hello, Yohannes',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Icon(
-                  Icons.notifications_none,
-                  color: Colors.grey[700],
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 25),
 
-          // Row 2: "Available Products" Title + Search Icon
-          Row(
-            children: [
-              const Text(
-                "Available Products",
-                style: TextStyle(
-                  fontSize: 26, // Larger and bolder than before
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                ),
-              ),
-              const Spacer(),
-              // Search Icon Button
-              InkWell(
-                onTap: () {
-                  // Navigate to the Search Page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SearchPage()),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
+                const Spacer(),
+
+                // Notification Icon
+                Container(
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300, width: 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.search, size: 24, color: Colors.grey[700]),
+                  child: Icon(
+                    Icons.notifications_none,
+                    color: Colors.grey[700],
+                    size: 20,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10), // Small spacer before the list starts
-        ],
+              ],
+            ),
+            const SizedBox(height: 25),
+
+            // Row 2: "Available Products" Title + Search Icon
+            Row(
+              children: [
+                const Text(
+                  "Available Products",
+                  style: TextStyle(
+                    fontSize: 18, // Larger and bolder than before
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+                ),
+                const Spacer(),
+                // Search Icon Button
+                InkWell(
+                  onTap: () {
+                    // Navigate to the Search Page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SearchPage()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.search,
+                      size: 20,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -121,7 +126,6 @@ class HomePage extends StatelessWidget {
           // Custom Header (replaces AppBar and initial title/search padding)
           _buildCustomHeader(context),
 
-          // Vertical list of cards
           Expanded(
             child:
                 shoes.isEmpty
@@ -133,7 +137,7 @@ class HomePage extends StatelessWidget {
                       itemBuilder:
                           (ctx, i) => Padding(
                             padding: const EdgeInsets.only(
-                              bottom: 24,
+                              bottom: 14,
                             ), // Increased bottom spacing
                             child: ShoeCard(
                               shoe: shoes[i],

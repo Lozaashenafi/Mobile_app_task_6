@@ -12,7 +12,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String query = 'Leather'; // Mock initial query to match the image
+  String query = ''; // Mock initial query to match the image
   String selectedCategory = ''; // State for the filter
   RangeValues priceRange = const RangeValues(
     0,
@@ -32,9 +32,6 @@ class _SearchPageState extends State<SearchPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Allows content to take up more screen space
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (BuildContext context) {
         // Use a StatefulWidget inside the modal to manage local filter state before applying
         return StatefulBuilder(
@@ -113,12 +110,7 @@ class _SearchPageState extends State<SearchPage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        // 1. Apply filter state to the main SearchPage state
-                        setState(() {
-                          // Update the state in the parent widget if needed
-                          // (In a real app, you would pass these values back to filter the results)
-                        });
-                        // 2. Close the sheet
+                        setState(() {});
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
@@ -243,8 +235,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: Column(
         children: [
-          _buildSearchBar(), // The new search bar matching the image
-          // --- Single Column List View of Results (Updated) ---
+          _buildSearchBar(),
           Expanded(
             child:
                 results.isEmpty && query.isNotEmpty

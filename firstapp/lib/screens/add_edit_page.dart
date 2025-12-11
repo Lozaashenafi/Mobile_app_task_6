@@ -27,7 +27,6 @@ class _AddEditPageState extends State<AddEditPage> {
   @override
   void initState() {
     super.initState();
-    // ... initialization code remains the same ...
     if (widget.shoe != null) {
       name = widget.shoe!.name;
       category = widget.shoe!.category;
@@ -52,11 +51,11 @@ class _AddEditPageState extends State<AddEditPage> {
         id: widget.shoe?.id ?? _uuid.v4(),
         name: name,
         category: category,
-        // Ensure size and price are handled correctly even if input is empty
         size: size,
         price: price,
         description: description,
         imageUrl: imageUrl,
+        rating: 4.1,
       );
 
       final provider = Provider.of<ShoeProvider>(context, listen: false);
@@ -69,87 +68,228 @@ class _AddEditPageState extends State<AddEditPage> {
     }
   }
 
-  // Helper method for clean input field styling
-  InputDecoration _inputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      fillColor: Colors.grey.shade100,
-      filled: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.shoe != null ? 'Edit Shoe' : 'Add New Shoe'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                initialValue: name,
-                decoration: _inputDecoration('Name'),
-                validator: (val) => val!.isEmpty ? 'Enter name' : null,
-                onSaved: (val) => name = val!,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: category,
-                decoration: _inputDecoration('Category'),
-                validator: (val) => val!.isEmpty ? 'Enter category' : null,
-                onSaved: (val) => category = val!,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: size == 0 ? '' : size.toString(),
-                decoration: _inputDecoration('Size (e.g., 42.0)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'Enter size' : null,
-                onSaved: (val) => size = double.tryParse(val!) ?? 0.0,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: price == 0 ? '' : price.toString(),
-                decoration: _inputDecoration('Price (e.g., 99.99)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'Enter price' : null,
-                onSaved: (val) => price = double.tryParse(val!) ?? 0.0,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: description,
-                decoration: _inputDecoration('Description'),
-                maxLines: 3,
-                validator: (val) => val!.isEmpty ? 'Enter description' : null,
-                onSaved: (val) => description = val!,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: imageUrl,
-                decoration: _inputDecoration('Image URL'),
-                validator: (val) => val!.isEmpty ? 'Enter image URL' : null,
-                onSaved: (val) => imageUrl = val!,
-              ),
-              const SizedBox(height: 30),
-              // ElevatedButton uses the theme style defined in main.dart
-              ElevatedButton(
-                onPressed: saveShoe,
-                child: Text(widget.shoe != null ? 'Update Shoe' : 'Add Shoe'),
-              ),
-            ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          centerTitle: true,
+          title: Text(
+            'Add Product',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                Container(
+                  height: 130,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF3F3F3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'upload image',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Name Field
+                Text(
+                  'name',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                  ),
+                ),
+                SizedBox(height: 4),
+                TextFormField(
+                  initialValue: name,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xFFF3F3F3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                  validator: (val) => val!.isEmpty ? 'Enter name' : null,
+                  onSaved: (val) => name = val!,
+                ),
+                SizedBox(height: 10),
+
+                // Category Field
+                Text(
+                  'category',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  initialValue: category,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                  validator: (val) => val!.isEmpty ? 'Enter category' : null,
+                  onSaved: (val) => category = val!,
+                ),
+                SizedBox(height: 10),
+
+                // Price Field
+                Text(
+                  'price',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                SizedBox(height: 4),
+                TextFormField(
+                  initialValue: price == 0 ? '' : price.toString(),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (val) => val!.isEmpty ? 'Enter price' : null,
+                  onSaved: (val) => price = double.tryParse(val!) ?? 0.0,
+                ),
+                SizedBox(height: 10),
+
+                // Description Field
+                Text(
+                  'description',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                SizedBox(height: 4),
+                TextFormField(
+                  initialValue: description,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                  ),
+                  maxLines: 4,
+                  validator: (val) => val!.isEmpty ? 'Enter description' : null,
+                  onSaved: (val) => description = val!,
+                ),
+                SizedBox(height: 10),
+                // Buttons Row
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ElevatedButton(
+                      onPressed: saveShoe,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3F51B5),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(
+                        'ADD',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (widget.shoe != null) {
+                          final provider = Provider.of<ShoeProvider>(
+                            context,
+                            listen: false,
+                          );
+                          provider.deleteShoe(widget.shoe!.id);
+                          Navigator.pop(context);
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: const BorderSide(
+                            color: Colors.red, // border color
+                            width: 1, // border thickness
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(
+                        'DELETE',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
