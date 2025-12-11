@@ -22,9 +22,9 @@ This README documents the submission for Task 6. The screenshots below illustrat
 
 **Screenshots:**
 
-| ![Home Screen](assets/images/screenshoot1.jpg) |   ![Product Detail](assets/images/screenshoot2.jpg)    | ![Add Product](assets/images/screenshoot3.jpg) | ![Search Functionality](assets/images/screenshoot4.jpg) |
-| :--------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------: | :-----------------------------------------------------: |
-|     _Home Screen showing product listing_      | _Product Detail Screen displaying product information_ |   _Add Product Screen with form validation_    |       _Search Screen with filtering capabilities_       |
+| ![Home Screen](assets/images/screenshoot1.jpg) | ![Product Detail](assets/images/screenshoot2.jpg) | ![Add Product](assets/images/screenshoot3.jpg) | ![Search Functionality](assets/images/screenshoot4.jpg) |
+| :--------------------------------------------: | :-----------------------------------------------: | :--------------------------------------------: | :-----------------------------------------------------: |
+|                 _Home Screen _                 |             _Product Detail Screen _              |              _Add Product Screen_              |                     _Search Screen_                     |
 
 ---
 
