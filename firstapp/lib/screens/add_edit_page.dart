@@ -1,9 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/shoe.dart';
 import '../providers/shoe_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert'; // For base64 encoding
 
 class AddEditPage extends StatefulWidget {
   final Shoe? shoe;
@@ -16,6 +21,7 @@ class AddEditPage extends StatefulWidget {
 class _AddEditPageState extends State<AddEditPage> {
   final _formKey = GlobalKey<FormState>();
   final _uuid = const Uuid();
+  final ImagePicker _picker = ImagePicker();
 
   late String name;
   late String category;
@@ -23,6 +29,9 @@ class _AddEditPageState extends State<AddEditPage> {
   late double price;
   late String description;
   late String imageUrl;
+
+  File? _selectedImage; // For mobile
+  Uint8List? _webImage; // For web
 
   @override
   void initState() {
@@ -44,9 +53,60 @@ class _AddEditPageState extends State<AddEditPage> {
     }
   }
 
+  // Function to pick image - works for both web and mobile
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        if (kIsWeb) {
+          // For web: convert to bytes
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _webImage = bytes;
+            // For web, we'll use a data URL or base64 string
+            // In a real app, you'd upload this to a server
+            imageUrl = 'data:image/png;base64,' + base64Encode(bytes);
+          });
+        } else {
+          // For mobile: use File
+          setState(() {
+            _selectedImage = File(pickedFile.path);
+            imageUrl = pickedFile.path;
+          });
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to pick image: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void saveShoe() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      // Determine final image URL
+      String finalImageUrl = imageUrl;
+
+      // If it's a new product, we need some image
+      if (widget.shoe == null && imageUrl.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an image'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       final newShoe = Shoe(
         id: widget.shoe?.id ?? _uuid.v4(),
         name: name,
@@ -54,18 +114,35 @@ class _AddEditPageState extends State<AddEditPage> {
         size: size,
         price: price,
         description: description,
-        imageUrl: imageUrl,
+        imageUrl: finalImageUrl,
         rating: 4.1,
       );
 
       final provider = Provider.of<ShoeProvider>(context, listen: false);
       if (widget.shoe != null) {
         provider.updateShoe(widget.shoe!.id, newShoe);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Product updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
         provider.addShoe(newShoe);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Product added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
       Navigator.pop(context);
     }
+  }
+
+  // Helper to encode bytes to base64 (you need to import 'dart:convert')
+  String base64Encode(List<int> bytes) {
+    return base64.encode(bytes);
   }
 
   @override
@@ -79,8 +156,8 @@ class _AddEditPageState extends State<AddEditPage> {
           elevation: 0,
           centerTitle: true,
           title: Text(
-            'Add Product',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            widget.shoe != null ? 'Edit Product' : 'Add Product',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),
         body: Padding(
@@ -89,50 +166,58 @@ class _AddEditPageState extends State<AddEditPage> {
             key: _formKey,
             child: ListView(
               children: [
-                Container(
-                  height: 130,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F3F3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.cloud_upload_outlined,
-                        size: 40,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'upload image',
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                // Name Field
-                Text(
-                  'name',
+                // Image Upload Section
+                const SizedBox(height: 10),
+                const Text(
+                  'Product Image',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black45,
+                    color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 8),
+
+                // Image container that's clickable
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F3F3),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                    ),
+                    child: _buildImagePreview(),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tap to select image from gallery',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
+                const SizedBox(height: 20),
+
+                // Name Field
+                const Text(
+                  'Product Name',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   initialValue: name,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Color(0xFFF3F3F3),
+                    fillColor: const Color(0xFFF3F3F3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
                     ),
@@ -140,28 +225,28 @@ class _AddEditPageState extends State<AddEditPage> {
                   validator: (val) => val!.isEmpty ? 'Enter name' : null,
                   onSaved: (val) => name = val!,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 16),
 
                 // Category Field
-                Text(
-                  'category',
+                const Text(
+                  'Category',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade700,
+                    color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextFormField(
                   initialValue: category,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade100,
+                    fillColor: const Color(0xFFF3F3F3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
                     ),
@@ -169,67 +254,106 @@ class _AddEditPageState extends State<AddEditPage> {
                   validator: (val) => val!.isEmpty ? 'Enter category' : null,
                   onSaved: (val) => category = val!,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 16),
 
-                // Price Field
-                Text(
-                  'price',
+                // Size Field
+                const Text(
+                  'Size',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade700,
+                    color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 8),
                 TextFormField(
-                  initialValue: price == 0 ? '' : price.toString(),
+                  initialValue: size == 0 ? '' : size.toString(),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade100,
+                    fillColor: const Color(0xFFF3F3F3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (val) => val!.isEmpty ? 'Enter price' : null,
-                  onSaved: (val) => price = double.tryParse(val!) ?? 0.0,
+                  validator: (val) => val!.isEmpty ? 'Enter size' : null,
+                  onSaved: (val) => size = double.tryParse(val!) ?? 0.0,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 16),
 
-                // Description Field
-                Text(
-                  'description',
+                // Price Field
+                const Text(
+                  'Price (\$)',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade700,
+                    color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 8),
                 TextFormField(
-                  initialValue: description,
+                  initialValue: price == 0 ? '' : price.toString(),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade100,
+                    fillColor: const Color(0xFFF3F3F3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    prefixText: '\$ ',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Enter price';
+                    final parsed = double.tryParse(val);
+                    if (parsed == null || parsed <= 0) {
+                      return 'Enter valid price';
+                    }
+                    return null;
+                  },
+                  onSaved: (val) => price = double.tryParse(val!) ?? 0.0,
+                ),
+                const SizedBox(height: 16),
+
+                // Description Field
+                const Text(
+                  'Description',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  initialValue: description,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFF3F3F3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
                   ),
                   maxLines: 4,
                   validator: (val) => val!.isEmpty ? 'Enter description' : null,
                   onSaved: (val) => description = val!,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 30),
+
                 // Buttons Row
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -242,57 +366,163 @@ class _AddEditPageState extends State<AddEditPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        'ADD',
-                        style: TextStyle(
+                        widget.shoe != null ? 'UPDATE' : 'ADD',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (widget.shoe != null) {
-                          final provider = Provider.of<ShoeProvider>(
-                            context,
-                            listen: false,
+                    const SizedBox(height: 12),
+                    if (widget.shoe != null)
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirm Delete'),
+                                content: const Text(
+                                  'Are you sure you want to delete this product?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      final provider =
+                                          Provider.of<ShoeProvider>(
+                                            context,
+                                            listen: false,
+                                          );
+                                      provider.deleteShoe(widget.shoe!.id);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Product deleted successfully!',
+                                          ),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           );
-                          provider.deleteShoe(widget.shoe!.id);
-                          Navigator.pop(context);
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: const BorderSide(
-                            color: Colors.red, // border color
-                            width: 1, // border thickness
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(color: Colors.red, width: 1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: const Text(
+                          'DELETE',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(
-                        'DELETE',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildImagePreview() {
+    // Show selected image if exists
+    if (kIsWeb && _webImage != null) {
+      // For web: show from bytes
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.memory(
+          _webImage!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (!kIsWeb && _selectedImage != null) {
+      // For mobile: show from file
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.file(
+          _selectedImage!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (widget.shoe != null && widget.shoe!.imageUrl.isNotEmpty) {
+      // Show existing image if editing
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          widget.shoe!.imageUrl,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return _buildUploadPlaceholder();
+          },
+        ),
+      );
+    } else {
+      // Show placeholder if no image
+      return _buildUploadPlaceholder();
+    }
+  }
+
+  Widget _buildUploadPlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.add_photo_alternate_outlined,
+          size: 40,
+          color: Colors.grey.shade600,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Add Image',
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+        ),
+      ],
     );
   }
 }
