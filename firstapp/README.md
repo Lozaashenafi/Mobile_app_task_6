@@ -28,7 +28,7 @@ This README documents the submission for Task 6. The screenshots below illustrat
 
 ---
 
-### **Submission — Task 7: Navigation and Routing Implementation**
+### **Task 7: Navigation and Routing Implementation**
 
 Task 7 implements app routing using named routes and demonstrates passing data between screens in the e-commerce application.
 
@@ -40,28 +40,10 @@ Task 7 implements app routing using named routes and demonstrates passing data b
 - **Navigation Animations**: Custom page transitions with smooth animations between screens
 - **Back Button Handling**: Proper navigation stack management and back button functionality
 
-### ✅ Task 11: Clean Architecture Code Structuring
+### Task 11: Clean Architecture Code Structuring
 
 **Description:**  
 Refactored the entire project using **Clean Architecture** to improve scalability and maintainability.
-
-**Architecture Overview:**
-
-lib/
-└── features/
-└── product/
-├── data/
-│ ├── models/
-│ ├── repositories/
-│ └── datasources/
-├── domain/
-│ ├── entities/
-│ ├── repositories/
-│ └── usecases/
-└── presentation/
-├── screens/
-├── providers/
-└── widgets/
 
 **Layer Responsibilities:**
 
@@ -88,19 +70,6 @@ lib/
 - Easier testing and debugging
 - Scalable and maintainable structure
 - Industry-standard Flutter architecture
-
----
-
-## 🛠 Tech Stack
-
-- **Flutter**
-- **Dart**
-- **Provider** (State Management)
-- **Equatable**
-- **Image Picker**
-- **UUID**
-
----
 
 ## 🚀 Getting Started
 
