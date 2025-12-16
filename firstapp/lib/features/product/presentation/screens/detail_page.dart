@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/shoe_provider.dart';
+
+import '../../domain/entities/product.dart';
+import '../providers/product_provider.dart';
 import 'add_edit_page.dart';
 
 class DetailPage extends StatelessWidget {
-  final String shoeId;
-  const DetailPage({required this.shoeId, super.key});
+  final String productId;
+  const DetailPage({required this.productId, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final shoeProvider = Provider.of<ShoeProvider>(context, listen: true);
-    // Find the shoe using the ID
-    final shoe = shoeProvider.findById(shoeId);
+    final productProvider = Provider.of<ProductProvider>(context, listen: true);
+
+    final Product product = productProvider.products.firstWhere(
+      (p) => p.id == productId,
+    );
 
     final List<double> availableSizes = [39, 40, 41, 42, 43, 44];
 
@@ -26,14 +30,10 @@ class DetailPage extends StatelessWidget {
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(
-                    0xFFF3E5D8,
-                  ), // Light beige background from image
+                  color: const Color(0xFFF3E5D8),
                   image: DecorationImage(
-                    image: NetworkImage(shoe.imageUrl),
-                    fit:
-                        BoxFit
-                            .fill, // Contain ensures the whole shoe is visible
+                    image: NetworkImage(product.imageUrl),
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),
@@ -69,12 +69,11 @@ class DetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category and Rating Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        shoe.category, // e.g. "Men's shoe"
+                        product.category,
                         style: TextStyle(fontSize: 16, color: Colors.grey[500]),
                       ),
                       Row(
@@ -94,14 +93,13 @@ class DetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Name and Price Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Text(
-                          shoe.name,
+                          product.name,
                           style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
@@ -110,11 +108,11 @@ class DetailPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '\$${shoe.price.toStringAsFixed(0)}',
+                        '\$${product.price.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Dark grey/black per image
+                          color: Colors.black,
                         ),
                       ),
                     ],
@@ -122,7 +120,6 @@ class DetailPage extends StatelessWidget {
 
                   const SizedBox(height: 25),
 
-                  // Size Label
                   const Text(
                     "Size:",
                     style: TextStyle(
@@ -133,14 +130,12 @@ class DetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // Size Selector Row
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children:
                           availableSizes.map((s) {
-                            // Check if this size matches the shoe's size
-                            bool isSelected = s == shoe.size;
+                            bool isSelected = s == product.size;
                             return Container(
                               margin: const EdgeInsets.only(right: 12),
                               width: 50,
@@ -150,7 +145,7 @@ class DetailPage extends StatelessWidget {
                                 color:
                                     isSelected
                                         ? const Color(0xFF3F51B5)
-                                        : Colors.white, // Blue if selected
+                                        : Colors.white,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -169,13 +164,12 @@ class DetailPage extends StatelessWidget {
 
                   const SizedBox(height: 25),
 
-                  // Description
                   Text(
-                    shoe.description,
+                    product.description,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
-                      height: 1.5, // Line height for readability
+                      height: 1.5,
                     ),
                   ),
                 ],
@@ -183,16 +177,15 @@ class DetailPage extends StatelessWidget {
             ),
           ),
 
-          // 3. BOTTOM BUTTONS (Pinned to bottom)
+          // 3. BOTTOM BUTTONS
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Row(
               children: [
-                // DELETE BUTTON
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      shoeProvider.deleteShoe(shoeId);
+                    onPressed: () async {
+                      await productProvider.removeProduct(productId);
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
@@ -213,21 +206,18 @@ class DetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 20),
-                // UPDATE BUTTON
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AddEditPage(shoe: shoe),
+                          builder: (_) => AddEditPage(product: product),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF3F51B5,
-                      ), // Matches the blue in image
+                      backgroundColor: const Color(0xFF3F51B5),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

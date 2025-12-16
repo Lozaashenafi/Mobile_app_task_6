@@ -39,3 +39,80 @@ Task 7 implements app routing using named routes and demonstrates passing data b
 - **Data Passing**: Successfully pass product data from Add/Edit screens back to Home screen
 - **Navigation Animations**: Custom page transitions with smooth animations between screens
 - **Back Button Handling**: Proper navigation stack management and back button functionality
+
+### ✅ Task 11: Clean Architecture Code Structuring
+
+**Description:**  
+Refactored the entire project using **Clean Architecture** to improve scalability and maintainability.
+
+**Architecture Overview:**
+
+lib/
+└── features/
+└── product/
+├── data/
+│ ├── models/
+│ ├── repositories/
+│ └── datasources/
+├── domain/
+│ ├── entities/
+│ ├── repositories/
+│ └── usecases/
+└── presentation/
+├── screens/
+├── providers/
+└── widgets/
+
+**Layer Responsibilities:**
+
+- **Domain Layer**
+
+  - Business entities (`Product`)
+  - Use cases (Create, Read, Update, Delete)
+  - Repository contracts
+
+- **Data Layer**
+
+  - Models extending domain entities
+  - Repository implementations
+  - Data mapping and persistence logic
+
+- **Presentation Layer**
+  - UI screens and widgets
+  - State management using Provider
+  - UI logic separated from business logic
+
+**Benefits:**
+
+- Clear separation of concerns
+- Easier testing and debugging
+- Scalable and maintainable structure
+- Industry-standard Flutter architecture
+
+---
+
+## 🛠 Tech Stack
+
+- **Flutter**
+- **Dart**
+- **Provider** (State Management)
+- **Equatable**
+- **Image Picker**
+- **UUID**
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Flutter SDK installed
+- Dart enabled
+- Emulator or physical device
+
+### Run the app
+
+```bash
+flutter pub get
+flutter run
+```

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/shoe_provider.dart';
-import '../widgets/shoe_card.dart'; // Assuming ShoeCard is implemented correctly for the list item design
+
+import '../providers/product_provider.dart';
+import '../widgets/shoe_card.dart';
 import 'detail_page.dart';
 import 'add_edit_page.dart';
-import 'search_page.dart'; // Import the SearchPage for navigation
+import 'search_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Helper method to build the custom header content
   Widget _buildCustomHeader(BuildContext context) {
     return SafeArea(
       child: Padding(
@@ -17,10 +17,8 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row 1: Avatar, Date/Name, Notification Icon
             Row(
               children: [
-                // Avatar Square
                 Container(
                   width: 35,
                   height: 35,
@@ -28,11 +26,8 @@ class HomePage extends StatelessWidget {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  // You can add an image/icon here
                 ),
                 const SizedBox(width: 15),
-
-                // Date + Hello Text
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -50,10 +45,7 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const Spacer(),
-
-                // Notification Icon
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -69,23 +61,19 @@ class HomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 25),
-
-            // Row 2: "Available Products" Title + Search Icon
             Row(
               children: [
                 const Text(
                   "Available Products",
                   style: TextStyle(
-                    fontSize: 18, // Larger and bolder than before
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.black87,
                   ),
                 ),
                 const Spacer(),
-                // Search Icon Button
                 InkWell(
                   onTap: () {
-                    // Navigate to the Search Page
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const SearchPage()),
@@ -114,39 +102,37 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shoeProvider = Provider.of<ShoeProvider>(context);
-    final shoes = shoeProvider.shoes;
+    final productProvider = Provider.of<ProductProvider>(context);
+    final products = productProvider.products;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // Removed the standard AppBar to match the image's full-bleed header layout
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Custom Header (replaces AppBar and initial title/search padding)
           _buildCustomHeader(context),
-
           Expanded(
             child:
-                shoes.isEmpty
-                    ? const Center(child: Text("No shoes available. Add some!"))
+                products.isEmpty
+                    ? const Center(
+                      child: Text("No products available. Add some!"),
+                    )
                     : ListView.builder(
-                      // Adjusted horizontal padding to match the general padding of the page
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      itemCount: shoes.length,
+                      itemCount: products.length,
                       itemBuilder:
                           (ctx, i) => Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 14,
-                            ), // Increased bottom spacing
-                            child: ShoeCard(
-                              shoe: shoes[i],
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: ProductCard(
+                              product: products[i],
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (_) => DetailPage(shoeId: shoes[i].id),
+                                        (_) => DetailPage(
+                                          productId: products[i].id,
+                                        ),
                                   ),
                                 );
                               },
@@ -156,11 +142,9 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-
-      // Floating Action Button
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF3F51B5), // Deep blue color
-        shape: const CircleBorder(), // Ensures perfect circle
+        backgroundColor: const Color(0xFF3F51B5),
+        shape: const CircleBorder(),
         elevation: 8,
         onPressed: () {
           Navigator.push(
