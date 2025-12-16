@@ -40,7 +40,7 @@ Task 7 implements app routing using named routes and demonstrates passing data b
 - **Navigation Animations**: Custom page transitions with smooth animations between screens
 - **Back Button Handling**: Proper navigation stack management and back button functionality
 
-### Task 11: Clean Architecture Code Structuring
+### Task 9: Entities, Use Cases, and Repositories
 
 **Description:**  
 Refactored the entire project using **Clean Architecture** to improve scalability and maintainability.
