@@ -71,6 +71,27 @@ Refactored the entire project using **Clean Architecture** to improve scalabilit
 - Scalable and maintainable structure
 - Industry-standard Flutter architecture
 
+## Task 10: Data Overview Layer
+
+**Description:**  
+Implemented the Data Layer structure and documented architecture and data flow.
+
+### Folder Structure
+
+lib/
+│── core/ # Shared utilities and error handling
+│── features/ # Feature-based modules
+│ └── ecommerce/
+│── test/ # Unit and widget tests
+
+### Data Models
+
+- Implemented `ProductModel` in  
+  `features/ecommerce/data/models/product_model.dart`
+- Mirrors the `Product` domain entity
+- Includes `fromJson` and `toJson` methods
+- Unit tests added to ensure correct data mapping
+
 ## 🚀 Getting Started
 
 ### Prerequisites
