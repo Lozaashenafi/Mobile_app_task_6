@@ -25,7 +25,6 @@ import 'features/product/presentation/providers/product_provider.dart';
 import 'features/product/presentation/screens/home_page.dart';
 
 void main() async {
-  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // 1. Initialize External Dependencies
