@@ -12,8 +12,10 @@ class NetworkInfoImpl implements NetworkInfo {
 
   @override
   Future<bool> get isConnected async {
+    // Check for web compatibility
     if (kIsWeb) return true;
 
+    // Proper usage of connectionChecker instance
     return await connectionChecker.hasConnection;
   }
 }

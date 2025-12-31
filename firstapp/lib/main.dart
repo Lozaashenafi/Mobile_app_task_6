@@ -32,8 +32,7 @@ void main() async {
   final connectionChecker = InternetConnectionChecker.createInstance();
 
   // 2. Initialize Data Sources (Concrete Implementations)
-  final remoteDataSource =
-      ProductRemoteDataSourceImpl(); // Ensure you created this
+  final remoteDataSource = ProductRemoteDataSourceImpl();
   final localDataSource = ProductLocalDataSourceImpl(
     sharedPreferences: sharedPreferences,
   );

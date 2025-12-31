@@ -24,9 +24,11 @@ class ProductRepositoryImpl implements ProductRepository {
         await localDataSource.cacheProducts(remoteProducts);
         return remoteProducts;
       } catch (e) {
+        // Error Handling: Fallback to local cache if remote fails
         return await localDataSource.getLastProducts();
       }
     } else {
+      // Error Handling: Use local cache if offline
       return await localDataSource.getLastProducts();
     }
   }
@@ -34,11 +36,15 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<Product?> getProductById(String id) async {
     if (await networkInfo.isConnected) {
-      final remoteProduct = await remoteDataSource.fetchProductById(id);
-      if (remoteProduct != null) {
-        await localDataSource.cacheProduct(remoteProduct);
+      try {
+        final remoteProduct = await remoteDataSource.fetchProductById(id);
+        if (remoteProduct != null) {
+          await localDataSource.cacheProduct(remoteProduct);
+        }
+        return remoteProduct;
+      } catch (e) {
+        return await localDataSource.getProductById(id);
       }
-      return remoteProduct;
     } else {
       return await localDataSource.getProductById(id);
     }
@@ -60,7 +66,7 @@ class ProductRepositoryImpl implements ProductRepository {
     if (await networkInfo.isConnected) {
       await remoteDataSource.addProduct(model);
     }
-    // Always cache locally as well
+    // Always update local cache to ensure consistency (Best Practice)
     await localDataSource.cacheProduct(model);
   }
 
@@ -88,7 +94,7 @@ class ProductRepositoryImpl implements ProductRepository {
     if (await networkInfo.isConnected) {
       await remoteDataSource.removeProduct(id);
     }
-    // Update local cache by removing it
+
     final products = await localDataSource.getLastProducts();
     products.removeWhere((p) => p.id == id);
     await localDataSource.cacheProducts(products);

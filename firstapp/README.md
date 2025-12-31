@@ -92,6 +92,42 @@ lib/
 - Includes `fromJson` and `toJson` methods
 - Unit tests added to ensure correct data mapping
 
+### Task 11: Contracts of Data Sources (Domain & Data Layer Interfaces)
+
+In this task, the project structure was refactored to follow Clean Architecture principles by defining clear contracts (abstract classes) for data sources and repositories.
+
+**Key Implementations:**
+
+- **Repository Contracts:** Established the `ProductRepository` interface in the Domain layer to decouple the business logic from data implementations.
+- **Data Source Interfaces:** Created abstract classes for `ProductRemoteDataSource` and `ProductLocalDataSource` to define the methods required for remote API calls and local caching.
+- **Dependency Setup:** Structured the dependency flow ensuring the repository depends on these contracts rather than concrete implementations.
+
+---
+
+### Task 12: Repository Implementation & Testing
+
+This task focused on the concrete implementation of the Repository and ensuring reliability through Unit Testing.
+
+**Key Implementations:**
+
+- **Repository Logic (`ProductRepositoryImpl`):**
+  - **Network Awareness:** Integrated `NetworkInfo` to check for internet connectivity.
+  - **Remote Logic:** When the device is online, the app fetches data from the `RemoteDataSource` and automatically updates the local cache.
+  - **Offline Fallback:** When the device is offline, the app seamlessly switches to the `LocalDataSource` (Shared Preferences) to provide a smooth user experience.
+- **Unit Testing:**
+  - Implemented a comprehensive test suite using `Mockito` for the `ProductRepositoryImpl`.
+  - Verified that the repository checks for network connection.
+  - Tested successful data fetching and caching when online.
+  - Tested the fallback mechanism to ensure data is retrieved from local storage when the connection is unavailable.
+  - Tested `create`, `update`, and `delete` operations to ensure both remote and local sources are synchronized.
+
+### Task 13: Network Information Implementation
+
+- **Feature**: Integrated network connectivity detection using the `internet_connection_checker` package.
+- **Abstraction**: Implemented a `NetworkInfo` contract and its concrete implementation `NetworkInfoImpl`.
+- **Repository Integration**: Updated `ProductRepositoryImpl` to depend on `NetworkInfo` via constructor injection.
+- **Offline Support**: Enhanced all repository methods to check for connectivity before attempting remote operations, with graceful fallbacks to the local cache when offline or when API requests fail.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
