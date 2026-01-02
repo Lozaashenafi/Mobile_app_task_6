@@ -128,6 +128,31 @@ This task focused on the concrete implementation of the Repository and ensuring 
 - **Repository Integration**: Updated `ProductRepositoryImpl` to depend on `NetworkInfo` via constructor injection.
 - **Offline Support**: Enhanced all repository methods to check for connectivity before attempting remote operations, with graceful fallbacks to the local cache when offline or when API requests fail.
 
+### Task 14: Local Data Source Implementation
+
+In this task, the local data source was implemented to enable offline support and improve app performance by caching products using persistent storage.
+
+**Key Implementations:**
+
+- **Local Data Source Implementation (`ProductLocalDataSourceImpl`):**
+  - **Persistence:** Utilized `shared_preferences` to store product data as JSON strings on the device.
+  - **CRUD Operations:** Implemented methods to cache the entire product list, retrieve cached products, and handle individual product caching/retrieval.
+  - **Error Handling:** Integrated the custom `CacheException` from the core layer to handle scenarios where data is missing or storage is inaccessible.
+- **Data Serialization:**
+  - Managed the conversion between `ProductModel` objects and JSON strings using `dart:convert` to facilitate storage in SharedPreferences.
+- **Unit Testing:**
+  - Developed a comprehensive test suite using `Mockito` to mock `SharedPreferences`.
+  - **Test Cases Included:**
+    - Verifying that `getLastProducts` returns data from the cache when present.
+    - Ensuring `CacheException` is thrown when the cache is empty.
+    - Confirming that `cacheProducts` correctly calls the underlying storage to save data.
+
+**Technologies Used:**
+
+- `shared_preferences` for local persistence.
+- `dart:convert` for JSON encoding/decoding.
+- `mockito` & `build_runner` for unit test mock generation.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
